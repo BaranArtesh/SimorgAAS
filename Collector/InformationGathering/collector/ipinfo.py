@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #Top li te keve
 
 #JEHIR
@@ -17,3 +18,6 @@ def get_ip_info(target):
             "CITY": data.get("city", N/A)
         }
         return ip_info
+=======
+#xwelisere te be
+>>>>>>> 0cbf5ba1140f9aca8ab19033034e8cd80948658e
