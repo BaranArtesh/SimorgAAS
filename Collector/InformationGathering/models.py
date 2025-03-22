@@ -1,20 +1,10 @@
 from django.db import models
 
+class User(models.Model):
+    username = models.CharField(max_length=150, unique=True)
+    email = models.EmailField(unique=True)
+    password = models.CharField(max_length=255)
+    is_admin = models.BooleanField(default=False)
 
-class Item(models.Model):
-    id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=255)
-    def __init__(self, id, name):
-        self.id = id
-        self.name = name
-
-items = [
-    Item(1, "Item 1"),
-    Item(2, "Item 2"),
-    Item(3, "Item 3"),
-
-    
-]
-
-
- 
+    def __str__(self):
+        return self.username
