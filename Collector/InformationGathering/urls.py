@@ -1,8 +1,8 @@
 from django.urls import path
 from .views import app_name_view
-from .UserManagement import UserManagement
+from .targetmanagement import TargetManagement
 
 urlpatterns = [
     path('', app_name_view, name='app_name'),
-    path('users/', UserManagement.as_view(), name='user_management')
+    path('target/', TargetManagement.as_view(), name='target_management'),
 ]
