@@ -2,6 +2,7 @@ from django.http import JsonResponse
 import logging
 from django.views import View
 from .whois import TargetWhoisDataCollector
+from .ipinfo import IPInfoCollector
 
 logger = logging.getLogger(__name__)
 
@@ -17,9 +18,16 @@ class StartInformationGatheringView(View):
     async def gather_all_information(self, target_id):
         try:
             WhoisCollector = TargetWhoisDataCollector(target_id)
+            ipinfocollector = IPInfoCollector(target_id)
+
+            whois_result, ipinfo_result = await WhoisCollector.run(), await ipinfocollector.run()
             
-            result = await WhoisCollector.run()
-            return result
+            return {
+                'status': 'success',
+                'whois': 'collected' if whois_result else 'failed',
+                'ip_info': 'collected' if ipinfo_result else 'failed',
+            }
+        
         except Exception as e:
             logger.error(f"Error gathering information: {str(e)}", exc_info=True)
             return {'status': 'error', 'message': 'An error occurred while gathering information'}
