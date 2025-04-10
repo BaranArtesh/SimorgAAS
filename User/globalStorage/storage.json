@@ -1,0 +1,71 @@
+{
+    "telemetry.sqmId": "",
+    "telemetry.machineId": "920e822801d2b35a15f792876a7ed18df9fdbe7c4d2b6c6980db9aa89fe3d72e",
+    "telemetry.devDeviceId": "64a439a7-fc32-4d6a-9706-e950bf5e6807",
+    "backupWorkspaces": {
+        "workspaces": [],
+        "folders": [
+            {
+                "folderUri": "file:///home/simorg/Desktop/SimorgAAS"
+            }
+        ],
+        "emptyWindows": [
+            {
+                "backupFolder": "1744273269407"
+            }
+        ]
+    },
+    "windowControlHeight": 35,
+    "profileAssociations": {
+        "workspaces": {
+            "file:///home/simorg/Desktop/SimorgAAS": "__default__profile__"
+        },
+        "emptyWindows": {
+            "1744273269407": "__default__profile__"
+        }
+    },
+    "theme": "vs-dark",
+    "themeBackground": "#1f1f1f",
+    "windowSplash": {
+        "zoomLevel": 0,
+        "baseTheme": "vs-dark",
+        "colorInfo": {
+            "foreground": "#cccccc",
+            "background": "#1f1f1f",
+            "editorBackground": "#1f1f1f",
+            "titleBarBackground": "#181818",
+            "titleBarBorder": "#2b2b2b",
+            "activityBarBackground": "#181818",
+            "activityBarBorder": "#2b2b2b",
+            "sideBarBackground": "#181818",
+            "sideBarBorder": "#2b2b2b",
+            "statusBarBackground": "#181818",
+            "statusBarBorder": "#2b2b2b",
+            "statusBarNoFolderBackground": "#1f1f1f"
+        },
+        "layoutInfo": {
+            "sideBarSide": "left",
+            "editorPartMinWidth": 220,
+            "titleBarHeight": 35,
+            "activityBarWidth": 48,
+            "sideBarWidth": 300,
+            "auxiliarySideBarWidth": 0,
+            "statusBarHeight": 22,
+            "windowBorder": false
+        }
+    },
+    "windowsState": {
+        "lastActiveWindow": {
+            "folder": "file:///home/simorg/Desktop/SimorgAAS",
+            "backupPath": "/home/simorg/Desktop/SimorgAAS/Backups/8120b62328bcaa555c3e57360985571b",
+            "uiState": {
+                "mode": 0,
+                "x": 360,
+                "y": 140,
+                "width": 1200,
+                "height": 800
+            }
+        },
+        "openedWindows": []
+    }
+}

@@ -1,0 +1,5 @@
+2025-04-10 04:21:09.292 [info] update#setState idle
+2025-04-10 04:21:39.296 [info] update#setState checking for updates
+2025-04-10 04:21:39.309 [info] update#setState available for download
+2025-04-10 04:21:40.306 [info] Extension host with pid 4264 exited with code: 0, signal: unknown.
+2025-04-10 04:33:29.472 [info] Extension host with pid 4433 exited with code: 0, signal: unknown.

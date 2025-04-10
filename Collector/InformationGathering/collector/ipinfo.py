@@ -1,9 +1,13 @@
 import aiohttp
 from ipwhois import IPWhois
+from django.core.exceptions import ObjectDoesNotExist
 import logging
 from asgiref.sync import sync_to_async
 from django.conf import settings
+from django.shortcuts import get_object_or_404
 from InformationGathering.models import IPInfo, Target
+from datetime import datetime
+
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +33,7 @@ class IPInfoCollector:
     async def fetch_abuseipdb_data(self, session):
         url = f"https://api.abuseipdb.com/api/v2/check?ipAddress={self.ip}&maxAgeInDays=90"
         headers = {
-            "Key": settings.ABUSEIPDB_KEY,
+            "Key": settings.ABUSEIPDB_API_KEY,
             "Accept": "application/json"
         }
         async with session.get(url, headers=headers) as response:
@@ -39,12 +43,12 @@ class IPInfoCollector:
             logger.error(f"AbuseIPDB API failed with status {response.status}")
             return {}
 
-    async def fetch_ip2location_data(self, session):
-        url = f"https://api.ip2location.io/?key={settings.IP2LOCATION_API_KEY}&ip={self.ip}"
+    async def fetch_ipgeolocation_data(self, session):
+        url = f"https://api.ipgeolocation.io/?key={settings.IPGEOLOCATION_API_KEY}&ip={self.ip}"
         async with session.get(url) as response:
             if response.status == 200:
                 return await response.json()
-            logger.error(f"IP2Location API failed with status {response.status}")
+            logger.error(f"IPGEOLOCATION API failed with status {response.status}")
             return {}
 
     async def collect(self):
@@ -53,12 +57,12 @@ class IPInfoCollector:
         async with aiohttp.ClientSession() as session:
             ipinfo_data = await self.fetch_ipinfo_data(session)
             abuse_data = await self.fetch_abuseipdb_data(session)
-            ip2location_data = await self.fetch_ip2location_data(session)
+            ipgeolocation_data = await self.fetch_ipgeolocation_data(session)
 
             return {
                 **ipinfo_data,
                 **abuse_data,
-                **ip2location_data
+                **ipgeolocation_data
             }
 
     async def save(self, data):
