@@ -3,9 +3,16 @@ import logging
 from django.views import View
 from .whois import TargetWhoisDataCollector
 from .ipinfo import IPInfoCollector
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
+
+
+
 
 logger = logging.getLogger(__name__)
 
+
+@method_decorator(csrf_exempt, name='dispatch')
 class StartInformationGatheringView(View):
     async def get(self, request):
         target_id = request.GET.get('id')
