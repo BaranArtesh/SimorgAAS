@@ -5,6 +5,7 @@ import whois
 from asgiref.sync import sync_to_async
 from django.shortcuts import get_object_or_404
 from datetime import datetime
+from .filter import filter_data_with_pandas
 
 logger = logging.getLogger(__name__)
 
@@ -36,7 +37,7 @@ class TargetWhoisDataCollector:
 
     async def collect_whois_info(self):
         """ Collect WHOIS data using the whois library for domain targets """
-        if not self.is_domain_type():
+        if not await self.is_domain_type():
             return None
     
         if not self.target.host:
@@ -158,3 +159,16 @@ class TargetWhoisDataCollector:
             return {'status': 'error', 'message': 'Failed to save WHOIS information.'}
 
         return {'status': 'success', 'message': 'WHOIS data gathered and saved successfully.'}
+    
+
+async def save_whois_info(self, processed_data):
+    filtered_data = filter_data_with_pandas(processed_data)
+    if filtered_data:
+        whois_info = await sync_to_async(WhoisInfo.objects.create)(
+            target=self.target,
+            **filtered_data
+        )
+        logger.info(f"تم حفظ معلومات WHOIS للهدف {self.target_id} بنجاح.")
+        return whois_info
+    return None
+

@@ -15,8 +15,9 @@ import os
 
 
 IPINFO_TOKEN = os.getenv('IPINFO_TOKEN', '642a4e744cbccc')
-ABUSEIPDB_API_KEY = os.getenv('ABUSEIPDB_API_KEY', 'bdfa9174c104a1a873292c45f770b925061667e55511d467135cb5e721723957765c47c9c971336f')
-IPGEOLOCATION_API_KEY = os.getenv('IPGEOLOCATION_API_KEY', '6b5898dc342d4e73b6028df423817191')
+ABUSEIPDB_API_KEY = os.getenv('ABUSEIPDB_API_KEY', 'c17f134f232e3aa58e3e409677577519a887ab53b8eaf3aaa6e2cdb2a2c1acf4aaa5f58a1747b20a')
+IPGEOLOCATION_API_KEY = os.getenv('IPGEOLOCATION_API_KEY', 'de19e066003a4a51a06b01c71e55268c')
+#VIRUSTOTAL_API_KEY = os.getenv('VIRUSTOTAL_API_KEY', '69de99f63abbfd51d0ba8c8f653ef17791de79b15b73c7e5d7101beeec44eb8d')
 
 
 # Other settings...
@@ -46,6 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
     'InformationGathering',
     'Scanning',
     'Enumeration',

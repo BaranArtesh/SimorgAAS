@@ -5,8 +5,7 @@ from .whois import TargetWhoisDataCollector
 from .ipinfo import IPInfoCollector
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
-
-
+from .filter import filter_data_with_pandas
 
 
 logger = logging.getLogger(__name__)
@@ -28,6 +27,7 @@ class StartInformationGatheringView(View):
             ipinfocollector = IPInfoCollector(target_id)
 
             whois_result, ipinfo_result = await WhoisCollector.run(), await ipinfocollector.run()
+            #print("IPInfo Result:", ipinfo_result) 
             
             return {
                 'status': 'success',
@@ -38,3 +38,5 @@ class StartInformationGatheringView(View):
         except Exception as e:
             logger.error(f"Error gathering information: {str(e)}", exc_info=True)
             return {'status': 'error', 'message': 'An error occurred while gathering information'}
+        
+
