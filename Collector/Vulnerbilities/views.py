@@ -1,8 +1,0 @@
-from django.shortcuts import render
-from django.http import JsonResponse
-
-def app_name_view(request):
-    return JsonResponse({'app_name': 'Vulnrbilities'})
-
-
-# Create your views here.
