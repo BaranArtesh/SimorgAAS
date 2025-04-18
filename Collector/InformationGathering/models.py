@@ -22,9 +22,7 @@ class User(models.Model):
     
 
 class WhoisInfo(models.Model):
-    target = models.OneToOneField(
-        "Target", related_name="whois_info", on_delete=models.CASCADE
-    )
+    target = models.OneToOneField(Target, on_delete=models.CASCADE)
     domain_name = models.CharField(max_length=255, null=True, blank=True, db_index=True)
     registrar = models.CharField(max_length=255, null=True, blank=True)
     whois_server = models.CharField(max_length=255, null=True, blank=True)
@@ -84,6 +82,8 @@ class IPInfo(models.Model):
     whois_info_link = models.URLField(null=True, blank=True)
     terms_of_service_link = models.URLField(null=True, blank=True)
     geofeed_link = models.URLField(null=True, blank=True)
+    network_ip_version = models.CharField(max_length=10, null=True, blank=True)  # إضافة هذا الحقل
+    admin_contact_phone = models.CharField(max_length=50, null=True, blank=True) 
 
     def __str__(self):
         return f"IP Info for {self.target.target_id} ({self.ip_address})"

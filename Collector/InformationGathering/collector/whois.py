@@ -36,7 +36,7 @@ class TargetWhoisDataCollector:
 
     async def collect_whois_info(self):
         """ Collect WHOIS data using the whois library for domain targets """
-        if not self.is_domain_type():
+        if not await self.is_domain_type():  # Ensure this is awaited
             return None
     
         if not self.target.host:
@@ -56,8 +56,7 @@ class TargetWhoisDataCollector:
 
     async def process_whois_data(self):
         """ Process the raw WHOIS data and structure it in a detailed way """
-        print(self.whois_data)
-        logger.info(f"WHOIS data  {self.whois_data} has been saved successfully.")
+        logger.info(f"Processing WHOIS data for {self.target.host}...")
         if not self.whois_data:
             return None
 
@@ -107,29 +106,36 @@ class TargetWhoisDataCollector:
     async def save_whois_info(self, processed_data):
         """ Save the detailed WHOIS data into the database """
         if processed_data:
-            whois_info = await sync_to_async(WhoisInfo.objects.create)(
-                target=self.target,
-                domain_name=processed_data['domain_name'],
-                registrar=processed_data['registrar'],
-                whois_server=processed_data['whois_server'],
-                referral_url=processed_data['referral_url'],
-                updated_date=processed_data['updated_date'],
-                creation_date=processed_data['creation_date'],
-                expiration_date=processed_data['expiration_date'],
-                name_servers=processed_data['name_servers'],
-                status=processed_data['status'],
-                emails=processed_data['emails'],
-                dnssec=processed_data['dnssec'],
-                name=processed_data['name'],
-                org=processed_data['org'],
-                address=processed_data['address'],
-                city=processed_data['city'],
-                state=processed_data['state'],
-                registrant_postal_code=processed_data['registrant_postal_code'],
-                country=processed_data['country']
-            )
-            logger.info(f"WHOIS data for target {self.target_id} has been saved successfully.")
-            return whois_info
+            try:
+                # Ensure the unique constraint for target_id is handled
+                whois_info, created = await sync_to_async(WhoisInfo.objects.update_or_create)(
+                    target=self.target,
+                    defaults={
+                        'domain_name': processed_data['domain_name'],
+                        'registrar': processed_data['registrar'],
+                        'whois_server': processed_data['whois_server'],
+                        'referral_url': processed_data['referral_url'],
+                        'updated_date': processed_data['updated_date'],
+                        'creation_date': processed_data['creation_date'],
+                        'expiration_date': processed_data['expiration_date'],
+                        'name_servers': processed_data['name_servers'],
+                        'status': processed_data['status'],
+                        'emails': processed_data['emails'],
+                        'dnssec': processed_data['dnssec'],
+                        'name': processed_data['name'],
+                        'org': processed_data['org'],
+                        'address': processed_data['address'],
+                        'city': processed_data['city'],
+                        'state': processed_data['state'],
+                        'registrant_postal_code': processed_data['registrant_postal_code'],
+                        'country': processed_data['country']
+                    }
+                )
+                logger.info(f"WHOIS data for target {self.target_id} has been saved successfully.")
+                return whois_info
+            except Exception as e:
+                logger.error(f"Failed to save WHOIS data: {e}")
+                return None
         return None
 
     async def run(self):

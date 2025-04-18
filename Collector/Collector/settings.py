@@ -11,6 +11,16 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+import os
+
+
+IPINFO_TOKEN = os.getenv('IPINFO_TOKEN', '642a4e744cbccc')
+ABUSEIPDB_API_KEY = os.getenv('ABUSEIPDB_API_KEY', 'bdfa9174c104a1a873292c45f770b925061667e55511d467135cb5e721723957765c47c9c971336f')
+IPGEOLOCATION_API_KEY = os.getenv('IPGEOLOCATION_API_KEY', '6b5898dc342d4e73b6028df423817191')
+
+
+# Other settings...
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
