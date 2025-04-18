@@ -1,0 +1,9 @@
+from django.shortcuts import render
+
+
+from django.http import JsonResponse
+
+def app_name_view(request):
+    return JsonResponse({'app_name': 'Scanning'})
+
+# Create your views here.
