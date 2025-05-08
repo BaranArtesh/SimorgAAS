@@ -1,4 +1,38 @@
 from django.db import models
+import json
+
+class NmapScan(models.Model):
+    target = models.ForeignKey('Target', related_name='nmap_scans', on_delete=models.CASCADE)
+    scan_date = models.DateTimeField(auto_now_add=True)
+    scan_type = models.CharField(max_length=50, choices=[('TCP', 'TCP Scan'), ('UDP', 'UDP Scan'), ('SYN', 'SYN Scan'), ('Full', 'Full Scan')])
+    status = models.CharField(max_length=50, choices=[('Success', 'Success'), ('Failed', 'Failed')])
+    scan_output = models.TextField(null=True, blank=True)
+    scan_duration = models.FloatField(null=True, blank=True)
+    scan_flags = models.JSONField(null=True, blank=True)
+    open_ports = models.JSONField(null=True, blank=True)
+    results = models.JSONField(null=True, blank=True)
+    host_os = models.CharField(max_length=255, null=True, blank=True)
+    os_detection_method = models.CharField(max_length=100, null=True, blank=True)
+    os_accuracy = models.IntegerField(null=True, blank=True)
+    is_vpn = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"Nmap Scan for {self.target.name} ({self.scan_type}) on {self.scan_date}"
+
+    def process_scan_results(self, raw_data):
+        self.scan_output = raw_data.get('output', '')
+        self.scan_duration = raw_data.get('duration', 0)
+        self.scan_flags = raw_data.get('flags', {})
+        self.open_ports = raw_data.get('open_ports', [])
+        self.results = raw_data.get('results', [])
+        self.host_os = raw_data.get('host_os', '')
+        self.os_detection_method = raw_data.get('os_detection_method', '')
+        self.os_accuracy = raw_data.get('os_accuracy', 0)
+        self.is_vpn = raw_data.get('is_vpn', False)
+
+    def save_scan_data(self, raw_data):
+        self.process_scan_results(raw_data)
+        self.save()
 
 class Target(models.Model):
     name = models.CharField(max_length=255, unique=True)
@@ -11,6 +45,7 @@ class Target(models.Model):
     def __str__(self):
         return self.name
 
+
 class User(models.Model):
     username = models.CharField(max_length=255, unique=True)
     email = models.EmailField(unique=True)
@@ -19,7 +54,7 @@ class User(models.Model):
 
     def __str__(self):
         return self.username
-    
+
 
 class WhoisInfo(models.Model):
     target = models.OneToOneField(Target, on_delete=models.CASCADE)
@@ -43,8 +78,7 @@ class WhoisInfo(models.Model):
     country = models.CharField(max_length=100, null=True, blank=True)
 
     def __str__(self):
-        return f"WHOIS for {self.target.target_id}"
-
+        return f"WHOIS for {self.target.name}"
 
 
 class IPInfo(models.Model):
@@ -82,8 +116,122 @@ class IPInfo(models.Model):
     whois_info_link = models.URLField(null=True, blank=True)
     terms_of_service_link = models.URLField(null=True, blank=True)
     geofeed_link = models.URLField(null=True, blank=True)
-    network_ip_version = models.CharField(max_length=10, null=True, blank=True)  # إضافة هذا الحقل
-    admin_contact_phone = models.CharField(max_length=50, null=True, blank=True) 
+    network_ip_version = models.CharField(max_length=10, null=True, blank=True)
+    admin_contact_phone = models.CharField(max_length=50, null=True, blank=True)
 
     def __str__(self):
-        return f"IP Info for {self.target.target_id} ({self.ip_address})"
+        return f"IP Info for {self.target.name} ({self.ip_address})"
+
+
+# class ShodanInfo(models.Model):
+#     target = models.ForeignKey('Target', related_name='shodan_scans', on_delete=models.CASCADE)
+#     scan_date = models.DateTimeField(auto_now_add=True)
+
+#     # Raw JSON blob of the Shodan API response
+#     raw_data = models.JSONField(null=True, blank=True)
+
+#     # Common summary fields
+#     ip_str = models.GenericIPAddressField()                        # The IP that Shodan scanned
+#     org = models.CharField(max_length=255, null=True, blank=True)  # Organization name
+#     os = models.CharField(max_length=255, null=True, blank=True)   # Operating system fingerprint
+#     isp = models.CharField(max_length=255, null=True, blank=True)  # ISP name
+#     country_code = models.CharField(max_length=2, null=True, blank=True)
+#     city = models.CharField(max_length=100, null=True, blank=True)
+#     latitude = models.FloatField(null=True, blank=True)
+#     longitude = models.FloatField(null=True, blank=True)
+#     asn = models.CharField(max_length=100, null=True, blank=True)  # ASN
+
+#     # Hostnames and domains
+#     hostnames = models.JSONField(null=True, blank=True)            # List of hostnames
+#     domains = models.JSONField(null=True, blank=True)              # List of domains
+
+#     # Cloudflare-related data
+#     cf_ray = models.CharField(max_length=255, null=True, blank=True)  # CF-Ray for tracing Cloudflare traffic
+#     cf_cache_status = models.CharField(max_length=50, null=True, blank=True)  # Cache status
+#     server_timing = models.TextField(null=True, blank=True)         # Server timing info
+
+#     # Services and ports discovered (e.g. 80/http, 22/ssh)
+#     ports = models.JSONField(null=True, blank=True)                # [80, 443, 22, …]
+#     services = models.JSONField(null=True, blank=True)             # [{ "port": 80, "service": "http", … }, …]
+
+#     # Vulnerabilities & exploits (if any)
+#     vulnerabilities = models.JSONField(null=True, blank=True)      # ["CVE-2020-1234", …]
+
+#     # SSL/TLS certificate details (optional)
+#     ssl_issuer = models.CharField(max_length=255, null=True, blank=True)
+#     ssl_subject = models.TextField(null=True, blank=True)
+#     ssl_not_before = models.DateTimeField(null=True, blank=True)
+#     ssl_not_after = models.DateTimeField(null=True, blank=True)
+
+#     def __str__(self):
+#         return f"Shodan scan for {self.target.name} @ {self.ip_str} on {self.scan_date}"
+
+
+class ShodanInfo(models.Model):
+    target = models.OneToOneField(Target, on_delete=models.CASCADE, related_name='shodan_info')
+    ip = models.GenericIPAddressField()
+
+    # General info fields
+    country = models.CharField(max_length=100, blank=True, null=True)
+    city = models.CharField(max_length=100, blank=True, null=True)
+    organization = models.CharField(max_length=255, blank=True, null=True)
+    isp = models.CharField(max_length=255, blank=True, null=True)
+    asn = models.CharField(max_length=100, blank=True, null=True)
+    os = models.CharField(max_length=100, blank=True, null=True)
+    hostnames = models.JSONField(null=True, blank=True)
+    domains = models.JSONField(null=True, blank=True)
+    tags = models.JSONField(null=True, blank=True)
+    last_update = models.CharField(max_length=100, null=True, blank=True)
+    vulnerabilities = models.JSONField(null=True, blank=True)
+
+
+    # Ports and services stored as JSON strings
+    open_ports = models.TextField(blank=True, default='[]')
+    services = models.TextField(blank=True, default='[]')
+
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def get_open_ports(self):
+        return json.loads(self.open_ports)
+
+    def set_open_ports(self, port_list):
+        self.open_ports = json.dumps(port_list)
+
+    def get_services(self):
+        return json.loads(self.services)
+
+    def set_services(self, service_list):
+        self.services = json.dumps(service_list)
+
+    def __str__(self):
+        return f"ShodanInfo for {self.ip}"
+
+    
+from django.db import models
+
+class CensysInfo(models.Model):
+    target = models.ForeignKey('Target', related_name='censys_scans', on_delete=models.CASCADE)
+    scan_date = models.DateTimeField(auto_now_add=True)
+    raw_data = models.JSONField(null=True, blank=True)
+    ip = models.GenericIPAddressField()
+    ip_int = models.BigIntegerField(null=True, blank=True)
+    asn = models.IntegerField(null=True, blank=True)
+    asn_name = models.CharField(max_length=255, null=True, blank=True)
+    asn_country_code = models.CharField(max_length=2, null=True, blank=True)
+    asn_description = models.TextField(null=True, blank=True)
+    location_city = models.CharField(max_length=100, null=True, blank=True)
+    location_country = models.CharField(max_length=100, null=True, blank=True)
+    latitude = models.FloatField(null=True, blank=True)
+    longitude = models.FloatField(null=True, blank=True)
+    tls_issuer = models.CharField(max_length=255, null=True, blank=True)
+    tls_subject = models.TextField(null=True, blank=True)
+    tls_not_before = models.DateTimeField(null=True, blank=True)
+    tls_not_after = models.DateTimeField(null=True, blank=True)
+    protocols = models.JSONField(null=True, blank=True)
+    services = models.JSONField(null=True, blank=True)
+    collection_status = models.CharField(max_length=50, default='success')
+    last_updated = models.DateTimeField(auto_now=True)
+    source = models.CharField(max_length=100, default='censys', blank=True)
+
+    def __str__(self):
+        return f"Censys scan for {self.target.name} @ {self.ip} on {self.scan_date}"

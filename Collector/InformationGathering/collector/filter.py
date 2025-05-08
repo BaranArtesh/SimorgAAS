@@ -1,116 +1,82 @@
-# import pandas as pd
-# from dateutil.parser import parse
+import requests
+from bs4 import BeautifulSoup
 
-# def filter_data_with_pandas(data: dict) -> dict:
-#     """
-#     Cleans WHOIS and IPInfo data dictionaries using pandas for filtering out empty or messy values.
-#     Field-aware enhancements are added for better data normalization.
-#     """
-#     if not data or not isinstance(data, dict):
-#         return {}
+# Function to extract data from the Shodan HTML response
+def extract_shodan_data(ip):
+    url = f'https://www.shodan.io/host/{ip}'
+    
+    # Send the GET request to fetch the page content
+    response = requests.get(url)
+    
+    if response.status_code == 200:
+        soup = BeautifulSoup(response.content, 'html.parser')
+        
+        # Extract general information
+        general_info = {}
+        general_info['country'] = soup.find('label', text='Country').find_next('div').get_text(strip=True)
+        general_info['city'] = soup.find('label', text='City').find_next('div').get_text(strip=True)
+        general_info['organization'] = soup.find('label', text='Organization').find_next('div').get_text(strip=True)
+        general_info['isp'] = soup.find('label', text='ISP').find_next('div').get_text(strip=True)
+        general_info['asn'] = soup.find('label', text='ASN').find_next('div').get_text(strip=True)
+        general_info['os'] = soup.find('label', text='Operating System').find_next('div').get_text(strip=True)
 
-#     df = pd.Series(data)
+        # Extract open ports
+        open_ports = []
+        ports_section = soup.find('div', {'id': 'ports'})
+        if ports_section:
+            open_ports = [port.get_text(strip=True) for port in ports_section.find_all('a')]
 
-#     # Step 1: Drop fields that are None, NaN, or empty strings
-#     df = df.dropna().replace('', pd.NA).dropna()
+        # Extract other relevant data (e.g., services or products)
+        services = []
+        services_section = soup.find_all('h1', class_='banner-title')
+        for service in services_section:
+            service_name = service.find('em')
+            if service_name:
+                services.append(service_name.get_text(strip=True))
+        
+        # Extract hashes (if available)
+        hashes = {}
+        hashes_section = soup.find('div', class_='hashes-table')
+        if hashes_section:
+            for row in hashes_section.find_all('div'):
+                hash_type = row.find_previous('div').get_text(strip=True) if row.find_previous('div') else ''
+                if hash_type and row.get_text(strip=True):
+                    hashes[hash_type] = row.get_text(strip=True)
 
-#     def clean_value(val):
-#         if isinstance(val, str):
-#             val = val.strip()
-#             return val if val else None
-#         elif isinstance(val, list):
-#             cleaned = list({str(v).strip() for v in val if v and str(v).strip()})
-#             return cleaned if cleaned else None
-#         elif isinstance(val, dict):
-#             return val  # You can decide to flatten this if needed
-#         return val
+        # Return all extracted data in a dictionary
+        return {
+            'ip': ip,
+            'general_info': general_info,
+            'open_ports': open_ports,
+            'services': services,
+            'hashes': hashes,
+        }
+    
+    else:
+        return {'error': f"Failed to retrieve data for IP: {ip}, Status Code: {response.status_code}"}
 
-#     df = df.apply(clean_value)
-#     df = df.dropna()
+# Example Usage
+ip = '45.74.4.179'
+data = extract_shodan_data(ip)
 
-#     # --- Specific field handling ---
-#     # Normalize emails to lowercase
-#     if 'emails' in df and isinstance(df['emails'], list):
-#         df['emails'] = [email.lower() for email in df['emails'] if '@' in email]
-
-#     email_fields = [
-#         "abuse_contact_email", "admin_contact_email", "noc_contact_email"
-#     ]
-#     for field in email_fields:
-#         if field in df and isinstance(df[field], str):
-#             df[field] = df[field].lower()
-
-#     # Normalize country/state fields to uppercase
-#     for field in ['country', 'org_country', 'asn_country_code', 'state', 'org_state']:
-#         if field in df and isinstance(df[field], str):
-#             df[field] = df[field].upper()
-
-#     # Parse and format date fields
-#     def parse_date_safe(val):
-#         try:
-#             return parse(val).strftime('%Y-%m-%d %H:%M:%S') if val else None
-#         except Exception:
-#             return None
-
-#     date_fields = ['updated_date', 'creation_date', 'expiration_date', 'asn_date']
-#     for field in date_fields:
-#         if field in df:
-#             if isinstance(df[field], list):
-#                 # Choose the most recent valid one from the list
-#                 parsed_dates = [parse_date_safe(d) for d in df[field] if d]
-#                 df[field] = max(parsed_dates) if parsed_dates else None
-#             else:
-#                 df[field] = parse_date_safe(df[field])
-
-#     # Standardize name_servers as a sorted list
-#     if 'name_servers' in df and isinstance(df['name_servers'], list):
-#         df['name_servers'] = sorted({ns.lower() for ns in df['name_servers']})
-
-#     # Clean text-heavy fields
-#     for field in ['status', 'asn_description', 'org_name', 'address', 'org_street']:
-#         if field in df and isinstance(df[field], str):
-#             df[field] = ' '.join(df[field].split())
-
-#     return df.to_dict()
-
-
-import pandas as pd
-
-def flatten_dict(d, parent_key='', sep='_'):
-    items = []
-    for k, v in d.items():
-        new_key = f"{parent_key}{sep}{k}" if parent_key else k
-        if isinstance(v, dict):
-            items.extend(flatten_dict(v, new_key, sep=sep).items())
-        else:
-            items.append((new_key, v))
-    return dict(items)
-
-def filter_data_with_pandas(raw_data_list):
-    flat_data = []
-
-    for raw_data in raw_data_list:
-        try:
-            flattened = flatten_dict(raw_data)
-            flat_data.append(flattened)
-        except Exception as e:
-            print(f"[!] Error flattening data: {e}")
-            continue
-
-    df = pd.DataFrame(flat_data)
-
-    # Replace NaNs with None (so they map to NULL in DB if needed)
-    df = df.where(pd.notnull(df), None)
-
-    # Filter only needed columns for storage
-    columns_to_keep = [
-        'ip', 'asn', 'asn_registry', 'asn_cidr', 'asn_date', 'asn_country_code', 'asn_description',
-        'network_name', 'network_handle', 'network_status', 'network_start_address',
-        'network_end_address', 'network_cidr', 'network_type', 'network_parent_handle',
-        'org_street', 'abuse_contact_name', 'abuse_contact_email', 'abuse_contact_phone'
-    ]
-
-    # Only keep those columns if they exist
-    filtered_df = df[[col for col in columns_to_keep if col in df.columns]]
-    return filtered_df.to_dict(orient='records')
+# Print extracted data
+if 'error' in data:
+    print(data['error'])
+else:
+    print(f"IP: {data['ip']}")
+    print("General Information:")
+    for key, value in data['general_info'].items():
+        print(f"  {key.capitalize()}: {value}")
+    
+    print("\nOpen Ports:")
+    for port in data['open_ports']:
+        print(f"  {port}")
+    
+    print("\nServices/Products:")
+    for service in data['services']:
+        print(f"  {service}")
+    
+    print("\nHashes:")
+    for hash_type, hash_value in data['hashes'].items():
+        print(f"  {hash_type}: {hash_value}")
 

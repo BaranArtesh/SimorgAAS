@@ -51,7 +51,8 @@ class IPInfoCollector:
 
             extracted_data = json.loads(cleaned_data)
 
-            print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n", extracted_data)
+            #
+            #print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n", extracted_data)
 
             network = extracted_data.get('network', {})
 
@@ -87,7 +88,6 @@ class IPInfoCollector:
             admin = extract_contact('admin')
             noc = extract_contact('noc')
 
-            # Print to debug
             print("ADMIN:", admin)
             print("NOC:", noc)
             print("ABUSE:", abuse)

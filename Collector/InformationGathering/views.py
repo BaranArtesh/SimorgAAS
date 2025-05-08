@@ -10,3 +10,4 @@ from django.views.decorators.csrf import csrf_exempt
 def app_name_view(request):
         return JsonResponse({'app_name': 'InformationGathering'})
 
+
