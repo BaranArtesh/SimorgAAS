@@ -12,14 +12,21 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import os
+from dotenv import load_dotenv
+
+# Load environment variables from the .env file
+load_dotenv()
+
+# Define the proxy setting from the environment variable
+PROXY = os.getenv("PROXY")
 
 
 IPINFO_TOKEN = os.getenv('IPINFO_TOKEN', '642a4e744cbccc')
 ABUSEIPDB_API_KEY = os.getenv('ABUSEIPDB_API_KEY', 'c17f134f232e3aa58e3e409677577519a887ab53b8eaf3aaa6e2cdb2a2c1acf4aaa5f58a1747b20a')
 IPGEOLOCATION_API_KEY = os.getenv('IPGEOLOCATION_API_KEY', 'de19e066003a4a51a06b01c71e55268c')
 #SHODAN_API_KEY = os.getenv('SHODAN_API_KEY', 'XYdjHDeJM36AjDfU1feBsyMJIj8XxGzD')
-#CENSYS_API_ID = os.getenv ('CENSYS_API_ID', 'bc03d5bd-5747-4141-9a46-784c0f23ce4c')
-#CENSYS_API_SECRET = os.getenv ('CENSYS_API_SECRET', 'SWhAZ0RjKH2stNMiUnlwFGjXTJ5t3eDh')
+CENSYS_API_ID = os.getenv ('CENSYS_API_ID', 'bc03d5bd-5747-4141-9a46-784c0f23ce4c')
+CENSYS_API_SECRET = os.getenv ('CENSYS_API_SECRET', 'SWhAZ0RjKH2stNMiUnlwFGjXTJ5t3eDh')
 
 
 

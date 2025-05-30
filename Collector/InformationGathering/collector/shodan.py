@@ -47,6 +47,7 @@ class ShodanCollector:
 
     async def extract_shodan_data(self, html_content):
         soup = BeautifulSoup(html_content, 'html.parser')
+        print("++++++++++++++++++++++++++++++++++++++++++++",self._get_text_after_label(soup, 'Operating System'))
 
         general_info = {
             'country': self._get_text_after_label(soup, 'Country'),
@@ -156,6 +157,7 @@ class ShodanCollector:
             await asyncio.sleep(2)  # Optional anti-bot delay
 
             extracted = await self.extract_shodan_data(html)
+            print("===========================================================================",extracted)
             await self.save_shodan_info(extracted)
 
             return {"status": "success", "message": "Shodan data saved", "data": extracted}
