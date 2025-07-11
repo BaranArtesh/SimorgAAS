@@ -16,6 +16,7 @@ class IPInfoCollector:
         self.target_id = target_id
         self.target = None
 
+        
     async def _get_target(self):
         if not self.target:
             self.target = await sync_to_async(get_object_or_404)(Target, id=self.target_id)
