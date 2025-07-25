@@ -1,0 +1,8 @@
+# Dirsearch started Thu Jul 24 09:57:09 2025 as: /home/rok/projects/SimorgAAS/simenv/bin/dirsearch -u http://50.17.215.195 -e php,html,js,asp
+
+302     0B   http://50.17.215.195/console/    -> REDIRECTS TO: http://50.17.215.195:9990/console
+302     0B   http://50.17.215.195/console/j_security_check    -> REDIRECTS TO: http://50.17.215.195:9990/console
+302     0B   http://50.17.215.195/console/payments/config.json    -> REDIRECTS TO: http://50.17.215.195:9990/console
+302     0B   http://50.17.215.195/console/base/config.json    -> REDIRECTS TO: http://50.17.215.195:9990/console
+302     0B   http://50.17.215.195/console/login/LoginForm.jsp    -> REDIRECTS TO: http://50.17.215.195:9990/console
+302     0B   http://50.17.215.195/console    -> REDIRECTS TO: http://50.17.215.195:9990/console

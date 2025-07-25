@@ -1,0 +1,5 @@
+# Dirsearch started Wed Jul 23 08:50:08 2025 as: /home/rok/projects/SimorgAAS/simenv/bin/dirsearch -u http://example.com -e php,html,js,asp
+
+403     0B   http://example.com/%2e%2e//google.com
+403     0B   http://example.com/.%2e/%2e%2e/%2e%2e/%2e%2e/etc/passwd
+403     0B   http://example.com/cgi-bin/.%2e/%2e%2e/%2e%2e/%2e%2e/etc/passwd

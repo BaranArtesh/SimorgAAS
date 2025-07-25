@@ -123,50 +123,6 @@ class IPInfo(models.Model):
         return f"IP Info for {self.target.name} ({self.ip_address})"
 
 
-# class ShodanInfo(models.Model):
-#     target = models.ForeignKey('Target', related_name='shodan_scans', on_delete=models.CASCADE)
-#     scan_date = models.DateTimeField(auto_now_add=True)
-
-#     # Raw JSON blob of the Shodan API response
-#     raw_data = models.JSONField(null=True, blank=True)
-
-#     # Common summary fields
-#     ip_str = models.GenericIPAddressField()                        # The IP that Shodan scanned
-#     org = models.CharField(max_length=255, null=True, blank=True)  # Organization name
-#     os = models.CharField(max_length=255, null=True, blank=True)   # Operating system fingerprint
-#     isp = models.CharField(max_length=255, null=True, blank=True)  # ISP name
-#     country_code = models.CharField(max_length=2, null=True, blank=True)
-#     city = models.CharField(max_length=100, null=True, blank=True)
-#     latitude = models.FloatField(null=True, blank=True)
-#     longitude = models.FloatField(null=True, blank=True)
-#     asn = models.CharField(max_length=100, null=True, blank=True)  # ASN
-
-#     # Hostnames and domains
-#     hostnames = models.JSONField(null=True, blank=True)            # List of hostnames
-#     domains = models.JSONField(null=True, blank=True)              # List of domains
-
-#     # Cloudflare-related data
-#     cf_ray = models.CharField(max_length=255, null=True, blank=True)  # CF-Ray for tracing Cloudflare traffic
-#     cf_cache_status = models.CharField(max_length=50, null=True, blank=True)  # Cache status
-#     server_timing = models.TextField(null=True, blank=True)         # Server timing info
-
-#     # Services and ports discovered (e.g. 80/http, 22/ssh)
-#     ports = models.JSONField(null=True, blank=True)                # [80, 443, 22, …]
-#     services = models.JSONField(null=True, blank=True)             # [{ "port": 80, "service": "http", … }, …]
-
-#     # Vulnerabilities & exploits (if any)
-#     vulnerabilities = models.JSONField(null=True, blank=True)      # ["CVE-2020-1234", …]
-
-#     # SSL/TLS certificate details (optional)
-#     ssl_issuer = models.CharField(max_length=255, null=True, blank=True)
-#     ssl_subject = models.TextField(null=True, blank=True)
-#     ssl_not_before = models.DateTimeField(null=True, blank=True)
-#     ssl_not_after = models.DateTimeField(null=True, blank=True)
-
-#     def __str__(self):
-#         return f"Shodan scan for {self.target.name} @ {self.ip_str} on {self.scan_date}"
-
-
 class ShodanInfo(models.Model):
     target = models.OneToOneField(Target, on_delete=models.CASCADE, related_name='shodan_info')
     ip = models.GenericIPAddressField()

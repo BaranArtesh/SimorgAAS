@@ -1,0 +1,8 @@
+# Dirsearch started Thu Jul 24 10:09:58 2025 as: /home/rok/projects/SimorgAAS/simenv/bin/dirsearch -u http://107.22.235.209 -e php,html,js,asp
+
+302     0B   http://107.22.235.209/console/payments/config.json    -> REDIRECTS TO: http://107.22.235.209:9990/console
+302     0B   http://107.22.235.209/console/login/LoginForm.jsp    -> REDIRECTS TO: http://107.22.235.209:9990/console
+302     0B   http://107.22.235.209/console/    -> REDIRECTS TO: http://107.22.235.209:9990/console
+302     0B   http://107.22.235.209/console/base/config.json    -> REDIRECTS TO: http://107.22.235.209:9990/console
+302     0B   http://107.22.235.209/console/j_security_check    -> REDIRECTS TO: http://107.22.235.209:9990/console
+302     0B   http://107.22.235.209/console    -> REDIRECTS TO: http://107.22.235.209:9990/console

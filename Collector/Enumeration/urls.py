@@ -1,8 +1,6 @@
 from django.urls import path
-from .views import app_name_view
+from .views import StartEnumerationAPI
 
 urlpatterns = [
-    path('', app_name_view, name='app_name'),
-
-    
+    path('api/enum/start/<int:target_id>/', StartEnumerationAPI.as_view(), name='api_start_enumeration'),
 ]
